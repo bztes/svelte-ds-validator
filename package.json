@@ -1,24 +1,35 @@
 {
-  "name": "@bztes/svelte-ds-validator",
-  "version": "1.0.0",
-  "description": "Damn simple validator for Svelte",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bztes/svelte-ds-validator.git"
-  },
-  "keywords": [
-    "svelte",
-    "validator",
-    "form",
-    "validation"
-  ],
-  "author": "Nico Beierle",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/bztes/svelte-ds-validator/issues"
-  }
+	"name": "@bztes/svelte-ds-validator",
+	"version": "1.0.0",
+	"description": "Damn simple value validation for Svelte",
+	"main": "index.js",
+	"scripts": {
+		"test": "jest",
+		"test:watch": "jest --watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bztes/svelte-ds-validator.git"
+	},
+	"keywords": [
+		"svelte",
+		"validator",
+		"form",
+		"validation"
+	],
+	"author": "Nico Beierle",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/bztes/svelte-ds-validator/issues"
+	},
+	"peerDependencies": {
+		"svelte": ">= 3.0.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.14.6",
+		"@babel/preset-env": "^7.14.7",
+		"babel-jest": "^27.0.6",
+		"jest": "^27.0.6",
+		"svelte": "^3.38.3"
+	}
 }

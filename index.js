@@ -9,7 +9,7 @@ function validateField(field) {
 	return field.valid;
 }
 
-export const createValidator = (settings) => {
+export const createChecker = (settings) => {
 	let { subscribe, update } = writable(settings);
 
 	function validate() {
@@ -28,27 +28,49 @@ export const createValidator = (settings) => {
 
 export const email = () => ({
 	validate: (value) =>
-		!!value?.match(
-			/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-		) || 'Please enter a valid email'
+		(typeof value === 'string' &&
+			!!value?.match(
+				/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+			)) ||
+		'Please enter a valid email'
 });
 
-export const required = () => ({
-	validate: (value) =>
-		(value !== undefined && value !== null && value !== '') || 'This field is required'
-});
+export const required = (options) => {
+	options = {
+		trim: true,
+		...options
+	};
+	return {
+		validate: (input) =>
+			(input !== undefined &&
+				input !== null &&
+				((!options.trim && input.toString().length > 0) ||
+					(options.trim && !input.toString().match(/^\s*$/)))) ||
+			'This field is required'
+	};
+};
 
 export const equals = (value) => ({
-	validate: (value2) => value == value2 || 'This field is required'
+	validate: (input) => value == input || 'Invalid value'
 });
 
-export const number = (min, max) => ({
-	validate: (value) => {
-		if (value < min) return 'Number to small';
-		if (value > max) return 'Number to large';
-		return true;
-	}
-});
+export const number = (options) => {
+	options = {
+		min: undefined,
+		max: undefined,
+		int: false,
+		...options
+	};
+	return {
+		validate: (input) => {
+			if (typeof input !== 'number') return 'Not a number';
+			if (options.int && !Number.isInteger(input)) return 'Not an integer';
+			if (options.min && input < options.min) return 'Number to small';
+			if (options.max && input > options.max) return 'Number to large';
+			return true;
+		}
+	};
+};
 
 export const not = (rule) => ({
 	...rule,
