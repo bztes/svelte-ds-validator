@@ -16,51 +16,51 @@ yarn add -D @bztes/svelte-ds-validator
 
 ```js
 <script>
-	import { createChecker, email, required, equals } from '@bztes/svelte-ds-validator';
+  import { createChecker, email, required, equals } from '@bztes/svelte-ds-validator';
 
-    let message = ...;
+  let message = ...;
 
-    // apply validation rules
-    let checker = createChecker({
-		fields: {
-			email: {
-				value: () => message.email,
-				rules: [required(), email()]
-			},
-			content: {
-				value: () => message.content,
-				rules: [required()]
-			},
-			legal: {
-				value: () => message.legal,
-				rules: [{ ...equals(true), message: 'Legal rules have to be accepted' }]
-			}
-		}
-	});
+  // apply validation rules
+  let checker = createChecker({
+    fields: {
+      email: {
+        value: () => message.email,
+        rules: [required(), email()]
+      },
+      content: {
+        value: () => message.content,
+        rules: [required()]
+      },
+      legal: {
+        value: () => message.legal,
+        rules: [{ ...equals(true), message: 'Legal rules have to be accepted' }]
+      }
+    }
+  });
 
-    // validate on message update
-	$: message, checker.validate();
+  // validate on message update
+  $: message, checker.validate();
 </script>
 
 <form>
-    <p>
-        <label for="email">E-Mail</label>
-        <input type="email" name="email" bind:value={message.email} />
-        <span>{$checker.fields.email.message}</span>
-    </p>
-    <p>
-        <label for="message">Message</label>
-        <textarea name="message" bind:value={message.content} />
-        <span>{$checker.fields.content.message}</span>
-    </p>
-    <p>
-        <label for="confirm">Accept</label>
-        <input type="checkbox" bind:checked={message.legal} />
-        <span>{$checker.fields.legal.message}</span>
-    </p>
-    <p>
-        <button type="submit" disabled={!$checker.valid}>Send</button>
-    </p>
+  <p>
+    <label for="email">E-Mail</label>
+    <input type="email" name="email" bind:value={message.email} />
+    <span>{$checker.fields.email.message}</span>
+  </p>
+  <p>
+    <label for="message">Message</label>
+    <textarea name="message" bind:value={message.content} />
+    <span>{$checker.fields.content.message}</span>
+  </p>
+  <p>
+    <label for="confirm">Accept</label>
+    <input type="checkbox" bind:checked={message.legal} />
+    <span>{$checker.fields.legal.message}</span>
+  </p>
+  <p>
+    <button type="submit" disabled={!$checker.valid}>Send</button>
+  </p>
 </form>
 ```
 
@@ -96,7 +96,7 @@ The Checker is basically a collection of input values and rules to be checked.
 
 ```js
 export const isTrue = () => ({
-	validate: (input) => !!input || 'Values must be true'
+  validate: (input) => !!input || 'Values must be true',
 });
 ```
 
@@ -106,7 +106,7 @@ export const isTrue = () => ({
 
 ```js
 export const equals = (value) => ({
-	validate: (input) => value == input || 'Invalid value'
+  validate: (input) => value == input || 'Invalid value',
 });
 ```
 
@@ -114,19 +114,19 @@ export const equals = (value) => ({
 
 ```js
 export const number = (options) => {
-	// provide default values
-	options = {
-		min: undefined,
-		max: undefined,
-		...options
-	};
-	return {
-		validate: (input) => {
-			if (typeof input !== 'number') return 'Not a number';
-			if (options.min && input < options.min) return 'Number to small';
-			if (options.max && input > options.max) return 'Number to large';
-			return true;
-		}
-	};
+  // provide default values
+  options = {
+    min: undefined,
+    max: undefined,
+    ...options,
+  };
+  return {
+    validate: (input) => {
+      if (typeof input !== 'number') return 'Not a number';
+      if (options.min && input < options.min) return 'Number to small';
+      if (options.max && input > options.max) return 'Number to large';
+      return true;
+    },
+  };
 };
 ```
