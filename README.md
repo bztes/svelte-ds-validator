@@ -27,6 +27,10 @@ yarn add -D @bztes/svelte-ds-validator
         value: () => message.email,
         rules: [required(), email()]
       },
+      age: {
+        value: () => message.content,
+        rules: [number({min: 0, max: 130, int: true})]
+      },
       content: {
         value: () => message.content,
         rules: [required()]
@@ -47,6 +51,11 @@ yarn add -D @bztes/svelte-ds-validator
     <label for="email">E-Mail</label>
     <input type="email" name="email" bind:value={message.email} />
     <span>{$checker.fields.email.message}</span>
+  </p>
+  <p>
+    <label for="age">Age</label>
+    <input type="number" name="age" bind:value={message.age} />
+    <span>{$checker.fields.age.message}</span>
   </p>
   <p>
     <label for="message">Message</label>
@@ -96,11 +105,11 @@ The Checker is basically a collection of input values and rules to be checked.
 
 ```js
 export const isTrue = () => ({
-  validate: (input) => !!input || 'Values must be true',
+  validate: (input) => !!input || 'Input value must be true',
 });
 ```
 
-`validate` is be a function that takes an input value and returns true or an error message
+`validate` is a function that takes an input value and returns true or an error message
 
 ### Parameters
 
