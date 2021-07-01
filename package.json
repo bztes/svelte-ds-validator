@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Damn simple value validation for Svelte",
   "main": "index.js",
+  "svelte": "index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch"
