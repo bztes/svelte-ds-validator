@@ -16,56 +16,56 @@ yarn add -D @bztes/svelte-ds-validator
 
 ```js
 <script>
-  import { createChecker, email, required, equals } from '@bztes/svelte-ds-validator';
+  import { createChecker, email, equals, number, required } from '@bztes/svelte-ds-validator';
 
-  let message = ...;
+  export let data = {};
 
   // apply validation rules
   let checker = createChecker({
     fields: {
       email: {
-        value: () => message.email,
-        rules: [required(), email()]
+        value: () => data.email,
+        rules: [required(), email()],
       },
       age: {
-        value: () => message.content,
-        rules: [number({min: 0, max: 130, int: true})]
+        value: () => data.age,
+        rules: [required(), number({ min: 0, max: 130, int: true })],
       },
-      content: {
-        value: () => message.content,
-        rules: [required()]
+      message: {
+        value: () => data.message,
+        rules: [required()],
       },
       legal: {
-        value: () => message.legal,
-        rules: [{ ...equals(true), message: 'Legal rules have to be accepted' }]
-      }
-    }
+        value: () => data.legal,
+        rules: [{ ...equals(true), error: 'Legal rules have to be accepted' }],
+      },
+    },
   });
 
-  // validate on message update
-  $: message, checker.validate();
+  // validate on data changed
+  $: data, checker.validate();
 </script>
 
 <form>
   <p>
     <label for="email">E-Mail</label>
-    <input type="email" name="email" bind:value={message.email} />
-    <span>{$checker.fields.email.message}</span>
+    <input type="email" name="email" bind:value={data.email} />
+    <span>{$checker.fields.email.error}</span>
   </p>
   <p>
     <label for="age">Age</label>
-    <input type="number" name="age" bind:value={message.age} />
-    <span>{$checker.fields.age.message}</span>
+    <input type="number" name="age" bind:value={data.age} />
+    <span>{$checker.fields.age.error}</span>
   </p>
   <p>
     <label for="message">Message</label>
-    <textarea name="message" bind:value={message.content} />
-    <span>{$checker.fields.content.message}</span>
+    <textarea name="message" bind:value={data.message} />
+    <span>{$checker.fields.message.error}</span>
   </p>
   <p>
-    <label for="confirm">Accept</label>
-    <input type="checkbox" bind:checked={message.legal} />
-    <span>{$checker.fields.legal.message}</span>
+    <label for="legal">Accept</label>
+    <input type="checkbox" name="legal" bind:checked={data.legal} />
+    <span>{$checker.fields.legal.error}</span>
   </p>
   <p>
     <button type="submit" disabled={!$checker.valid}>Send</button>

@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 
 function validateField(field) {
-  let [v, msg] = field.rules
+  let [v, error] = field.rules
     ?.map((v) => [v, v.validate(field.value())])
-    .find(([v, msg]) => msg !== true) || [undefined, ''];
-  field.valid = !msg;
-  field.message = v?.message || msg;
+    .find(([_, error]) => error !== true) || [null, ''];
+  field.valid = !error;
+  field.error = v?.error || error;
   return field.valid;
 }
 
@@ -75,5 +75,5 @@ export const number = (options) => {
 export const not = (rule) => ({
   ...rule,
   validate: (value) => rule.validate(value) !== true,
-  message: 'Not: ' + rule.message,
+  error: 'Not: ' + rule.error,
 });
