@@ -75,31 +75,31 @@ yarn add -D @bztes/svelte-ds-validator
 
 ## Checker
 
-The Checker is basically a collection of input values and rules to be checked.
+The Checker is a collection of input values and the rules to be checked.
 
-| Function / Properties          | Description                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| `checker.validate()`           | Function to run validation                                                           |
-| `checker.valid`                | true if all input values are valid, else otherwise                                   |
-| `checker.fields`               | Object of all the defined validator fields                                           |
-| `checker.fields.[KEY].input`   | The function that returns the input value for the specific field                     |
-| `checker.fields.[KEY].rules`   | The list of rules that are checked for the specific field                            |
-| `checker.fields.[KEY].message` | If the the input is invalid this property contains the error message, null otherwise |
+| Function / Properties        | Description                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| `checker.validate()`         | Runs the validation. Should be called after the input has changed                  |
+| `checker.valid`              | `true` if all input values are valid, `false` otherwise                            |
+| `checker.fields`             | Object with the input that should be checked. Typically on field for each variable |
+| `checker.fields.[KEY].input` | This function returns the input value that should be checked                       |
+| `checker.fields.[KEY].rules` | The list of validators to be applied                                               |
+| `checker.fields.[KEY].error` | Contains the error message if the input is invalid, `null` otherwise               |
 
 ## Rule validators
 
 | Validator                           | Default Value   | Description                                                                       |
 | ----------------------------------- | --------------- | --------------------------------------------------------------------------------- |
-| **`email()`**                       | -               | Email address validation                                                          |
-| **`equal(val)`**                    | `val=undefined` | `true` if val == input                                                            |
-| **`number(options)`**               | `options={...}` | `true` if the `input` is a number, else `false`                                   |
+| `email()`                           | -               | Email address validation                                                          |
+| `equal(val)`                        | `val=undefined` | `true` if val == input                                                            |
+| `number(options)`                   | `options={...}` | `true` if the `input` is a number, else `false`                                   |
 | &nbsp;&nbsp;`number.options.int`    | `false`         | If `true` the `input` must be a integer value                                     |
 | &nbsp;&nbsp;`number.options.min`    | `undefined`     | If defined the `input` must be larger or equal to `min`                           |
 | &nbsp;&nbsp;`number.options.max`    | `undefined`     | If defined the `input` must be small or equal to `max`                            |
-| **`required(options)`**             | `options={...}` | `false` if the `input` is null, undefined or toString().length === 0, else `true` |
+| `required(options)`                 | `options={...}` | `false` if the `input` is null, undefined or toString().length === 0, else `true` |
 | &nbsp;&nbsp;`required.options.trim` | `true`          | If `true` whitespaces from both ends of the `input` string are not considered     |
 
-## Write your own validator is simple
+## Writing your own validator is simple
 
 ### Minimal example
 
@@ -111,7 +111,7 @@ export const isTrue = () => ({
 
 `validate` is a function that takes an input value and returns true or an error message
 
-### Parameters
+### Validator with parameters
 
 ```js
 export const equals = (value) => ({
@@ -119,7 +119,7 @@ export const equals = (value) => ({
 });
 ```
 
-### Parameters as object
+### Validator with options object
 
 ```js
 export const number = (options) => {
