@@ -88,16 +88,19 @@ The Checker is a collection of input values and the rules to be checked.
 
 ## Rule validators
 
-| Validator                           | Default Value   | Description                                                                       |
-| ----------------------------------- | --------------- | --------------------------------------------------------------------------------- |
-| `email()`                           | -               | Email address validation                                                          |
-| `equal(val)`                        | `val=undefined` | `true` if val == input                                                            |
-| `number(options)`                   | `options={...}` | `true` if the `input` is a number, else `false`                                   |
-| &nbsp;&nbsp;`number.options.int`    | `false`         | If `true` the `input` must be a integer value                                     |
-| &nbsp;&nbsp;`number.options.min`    | `undefined`     | If defined the `input` must be larger or equal to `min`                           |
-| &nbsp;&nbsp;`number.options.max`    | `undefined`     | If defined the `input` must be small or equal to `max`                            |
-| `required(options)`                 | `options={...}` | `false` if the `input` is null, undefined or toString().length === 0, else `true` |
-| &nbsp;&nbsp;`required.options.trim` | `true`          | If `true` whitespaces from both ends of the `input` string are not considered     |
+| Validator                           | Default Value    | Description                                                                                   |
+| ----------------------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
+| `email()`                           | -                | Email address validation                                                                      |
+| `equal(val)`                        | `val=undefined`  | `true` if `val == input`                                                                      |
+| `not(rule!)`                        | `rule=undefined` | flips the result of another rule, e.g. `not(equal(true))` passes if input value is not `true` |
+| `number(options)`                   | `options={...}`  | `true` if the `input` is a number, else `false`                                               |
+| &nbsp;&nbsp;`number.options.int`    | `false`          | If `true` the `input` must be a integer value                                                 |
+| &nbsp;&nbsp;`number.options.min`    | `undefined`      | If defined the `input` must be larger or equal to `min`                                       |
+| &nbsp;&nbsp;`number.options.max`    | `undefined`      | If defined the `input` must be small or equal to `max`                                        |
+| `required(options)`                 | `options={...}`  | `false` if the `input` is `null`, `undefined` or `toString().length === 0`, else `true`       |
+| &nbsp;&nbsp;`required.options.trim` | `true`           | If `true` whitespaces from both ends of the `input` string are not considered                 |
+
+! = required parameters
 
 ## Writing your own validator is simple
 

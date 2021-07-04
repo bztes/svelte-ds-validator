@@ -74,6 +74,5 @@ export const number = (options) => {
 
 export const not = (rule) => ({
   ...rule,
-  validate: (value) => rule.validate(value) !== true,
-  error: 'Not: ' + rule.error,
+  validate: (value) => (rule.validate(value) !== true ? true : 'Invalid value'),
 });
