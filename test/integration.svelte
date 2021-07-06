@@ -1,5 +1,5 @@
 <script>
-  import { createChecker, email, equals, number, required } from '../index';
+  import { and, createChecker, email, equals, number, required } from '../index';
 
   export let data;
 
@@ -8,19 +8,20 @@
     fields: {
       email: {
         value: () => data.email,
-        rules: [required(), email()],
+        rule: and(required(), email()),
       },
       age: {
         value: () => data.age,
-        rules: [required(), number({ min: 0, max: 130, int: true })],
+        rule: and(required(), number({ min: 0, max: 130, int: true })),
       },
       message: {
         value: () => data.message,
-        rules: [required()],
+        rule: required(),
       },
       legal: {
         value: () => data.legal,
-        rules: [{ ...equals(true), error: 'Legal rules have to be accepted' }],
+        // overwrite equals-rule to provide a custom error message
+        rule: { ...equals(true), error: 'Legal rules have to be accepted' },
       },
     },
   });
