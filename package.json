@@ -6,7 +6,8 @@
   "svelte": "index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:ci": "jest --coverage=true"
   },
   "repository": {
     "type": "git",
