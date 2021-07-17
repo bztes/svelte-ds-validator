@@ -83,6 +83,12 @@ export const or = (...rules) => ({
   },
 });
 
+export const regex = (pattern) => ({
+  validate: function (value) {
+    return !!value?.toString().match(pattern) || this.error || 'Invalid value';
+  },
+});
+
 export const required = (options) => {
   options = {
     trim: true,

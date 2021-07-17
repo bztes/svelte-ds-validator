@@ -21,7 +21,7 @@ yarn add -D @bztes/svelte-ds-validator
   export let data;
 
   // apply validation rules
-  let checker = createChecker({
+  const checker = createChecker({
     fields: {
       email: {
         value: () => data.email,
@@ -89,28 +89,158 @@ The Checker is a collection of input values and the rules to be checked.
 
 ## Rule validators
 
-| Validator                           | Default Value    | Description                                                                                                    |
-| ----------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| `and(...rules)`                     | []               | Combine multiple rules: All rules must become `true`                                                           |
-| `email()`                           | -                | Email address validation                                                                                       |
-| `equal(val)`                        | `val=undefined`  | `true` if `val == input`                                                                                       |
-| `not(rule!)`                        | `rule=undefined` | flips the result of another rule, e.g. `not(equal(true))` passes if input value is `false, 0, null, undefined` |
-| `number(options)`                   | `options={...}`  | `true` if the `input` is a number, else `false`                                                                |
-| &nbsp;&nbsp;`number.options.int`    | `false`          | If `true` the `input` must be a integer value                                                                  |
-| &nbsp;&nbsp;`number.options.min`    | `undefined`      | If defined the `input` must be larger or equal to `min`                                                        |
-| &nbsp;&nbsp;`number.options.max`    | `undefined`      | If defined the `input` must be small or equal to `max`                                                         |
-| `or(...rules)`                      | []               | Combine multiple rules: At least one rule must become `true`. Returns `true` if no rules are provided          |
-| `required(options)`                 | `options={...}`  | `false` if the `input` is `null`, `undefined` or `toString().length === 0`, else `true`                        |
-| &nbsp;&nbsp;`required.options.trim` | `true`           | If `true` whitespaces from both ends of the `input` string are not considered                                  |
+### and(...rules)
 
-! = required parameters
+Combine multiple rules: All rules must become `true`. Default value for `rules` is `[]`.
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    status: {
+      value: () => user.status,
+      rule: and(required(), regex(/@intra.net$/)),
+    },
+  },
+});
+```
+
+### email()
+
+Email address validation.
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    email: {
+      value: () => user.email,
+      rule: email(),
+    },
+  },
+});
+```
+
+### equals(value)
+
+`true` if `value == input`. Default for `value` is `undefined`.
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    confirm: {
+      value: () => terms.confirm,
+      rule: equals(true),
+    },
+  },
+});
+```
+
+### not(rule)
+
+Flips the result of another rule, e.g. `not(equal(true))` passes if input value is `false, 0, null, undefined`. `rule` parameter is required
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    status: {
+      path: () => user.path,
+      rule: not(regex(/\s/)),
+    },
+  },
+});
+```
+
+### number(options)
+
+Evaluates as `true` if the `input` is a number.
+
+| Options       | Default Value | Description                                             |
+| ------------- | ------------- | ------------------------------------------------------- |
+| `options.int` | `false`       | If `true` the `input` must be a integer value           |
+| `options.min` | `undefined`   | If defined the `input` must be larger or equal to `min` |
+| `options.max` | `undefined`   | If defined the `input` must be small or equal to `max`  |
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    age: {
+      value: () => user.age,
+      rule: number({ int: true, min: 18 }),
+    },
+  },
+});
+```
+
+### or(...rules)
+
+Combine multiple rules: At least one rule must become `true`. Returns `true` if no rules are provided. Default value for `rules` is `[]`.
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    status: {
+      phone: () => user.phone,
+      rule: or(number(), not(required())),
+    },
+  },
+});
+```
+
+### reqex(pattern)
+
+`true` if the `input` value matches the specified pattern. If the `input` is not a string it will be converted automatically by using `toString()`.
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    username: {
+      value: () => user.name,
+      rule: regex(/^[a-z][a-z0-9_-]+$/i),
+    },
+  },
+});
+```
+
+### required(options)
+
+`true` if `input` is NOT `null`, `undefined` or `toString().length === 0`
+
+| Options        | Default Value | Description                                                                   |
+| -------------- | ------------- | ----------------------------------------------------------------------------- |
+| `options.trim` | `true`        | If `true` whitespaces from both ends of the `input` string are not considered |
+
+Example
+
+```js
+const checker = createChecker({
+  fields: {
+    address: {
+      value: () => user.address,
+      rule: required(),
+    },
+  },
+});
+```
 
 ## Writing your own validator is simple
 
 ### Minimal example
 
 ```js
-export const isTrue = () => ({
+const isTrue = () => ({
   validate: (input) => !!input || 'Input value must be true',
 });
 ```
@@ -120,7 +250,7 @@ export const isTrue = () => ({
 ### Validator with parameters
 
 ```js
-export const equals = (value) => ({
+const equals = (value) => ({
   validate: (input) => value == input || 'Invalid value',
 });
 ```
@@ -128,7 +258,7 @@ export const equals = (value) => ({
 ### Validator with options object
 
 ```js
-export const number = (options) => {
+const number = (options) => {
   // provide default values
   options = {
     min: undefined,
