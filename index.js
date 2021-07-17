@@ -59,11 +59,16 @@ export const number = (options) => {
     min: undefined,
     max: undefined,
     int: false,
+    parseString: true,
     ...options,
   };
   return {
     validate: function (input) {
-      if (typeof input !== 'number') return this.error || 'Not a number';
+      if (typeof input === 'string' && options.parseString) {
+        input = Number(input);
+      }
+
+      if (typeof input !== 'number' || isNaN(input)) return this.error || 'Not a number';
       if (options.int && !Number.isInteger(input)) return this.error || 'Not an integer';
       if (options.min && input < options.min) return this.error || 'Number to small';
       if (options.max && input > options.max) return this.error || 'Number to large';

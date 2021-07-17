@@ -11,6 +11,21 @@ describe('number', () => {
     expect(validator.validate('bztes')).toBe(nanMsg);
   });
 
+  test('NaN', () => {
+    let validator = number();
+    expect(validator.validate(NaN)).toBe(nanMsg);
+  });
+
+  test('string number', () => {
+    let validator = number();
+    expect(validator.validate('10')).toBe(true);
+  });
+
+  test('string number, parsing false', () => {
+    let validator = number({ parseString: false });
+    expect(validator.validate('10')).toBe(nanMsg);
+  });
+
   test('undefined', () => {
     let validator = number();
     expect(validator.validate()).toBe(nanMsg);
