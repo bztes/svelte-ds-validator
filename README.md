@@ -83,7 +83,7 @@ The Checker is a collection of input values and the rules to be checked.
 | `checker.validate()`         | Runs the validation. Should be called after the input has changed                  |
 | `checker.valid`              | `true` if all input values are valid, `false` otherwise                            |
 | `checker.fields`             | Object with the input that should be checked. Typically on field for each variable |
-| `checker.fields.[KEY].value` | This function returns the input value that should be checked                       |
+| `checker.fields.[KEY].value` | This function returns the input value to be checked                                |
 | `checker.fields.[KEY].rule`  | The rule that should be checked. Use `and()` or `or()` to combine rules            |
 | `checker.fields.[KEY].error` | Contains the error message if the input is invalid, `null` otherwise               |
 
@@ -93,17 +93,14 @@ The Checker is a collection of input values and the rules to be checked.
 
 Combine multiple rules: All rules must become `true`. Default value for `rules` is `[]`.
 
-Example
+Examples
 
 ```js
-const checker = createChecker({
-  fields: {
-    status: {
-      value: () => user.status,
-      rule: and(required(), regex(/@intra.net$/)),
-    },
-  },
-});
+// having various error messages: first checks if an input is provided and then validates the pattern
+and(required(), regex(/^[0-9]{3}\/[0-9]{3}$/))
+
+// input must be a number but not between 18 and 21
+and(number(), not(number({ min: 18, max: 21 }))
 ```
 
 ### email()
@@ -113,48 +110,36 @@ Email address validation.
 Example
 
 ```js
-const checker = createChecker({
-  fields: {
-    email: {
-      value: () => user.email,
-      rule: email(),
-    },
-  },
-});
+// nothing to say here
+email();
 ```
 
 ### equals(value)
 
 `true` if `value == input`. Default for `value` is `undefined`.
 
-Example
+Examples
 
 ```js
-const checker = createChecker({
-  fields: {
-    confirm: {
-      value: () => terms.confirm,
-      rule: equals(true),
-    },
-  },
-});
+// string matching
+equals('confirm');
+
+// input must be true, 1 or "1"
+equals(true);
 ```
 
 ### not(rule)
 
 Flips the result of another rule, e.g. `not(equal(true))` passes if input value is `false, 0, null, undefined`. `rule` parameter is required
 
-Example
+Examples
 
 ```js
-const checker = createChecker({
-  fields: {
-    status: {
-      path: () => user.path,
-      rule: not(regex(/\s/)),
-    },
-  },
-});
+// string must not contain any whitespaces
+not(regex(/\s/));
+
+// input must not be a number
+not(number());
 ```
 
 ### number(options)
@@ -170,14 +155,8 @@ Evaluates as `true` if the `input` is a number.
 Example
 
 ```js
-const checker = createChecker({
-  fields: {
-    age: {
-      value: () => user.age,
-      rule: number({ int: true, min: 18 }),
-    },
-  },
-});
+// input must be a integer value larger or equal to 18
+number({ int: true, min: 18 });
 ```
 
 ### or(...rules)
@@ -187,31 +166,25 @@ Combine multiple rules: At least one rule must become `true`. Returns `true` if 
 Example
 
 ```js
-const checker = createChecker({
-  fields: {
-    status: {
-      phone: () => user.phone,
-      rule: or(number(), not(required())),
-    },
-  },
-});
+// input must be a number or empty
+or(number(), not(required()));
 ```
 
-### reqex(pattern)
+### regex(pattern)
 
 `true` if the `input` value matches the specified pattern. If the `input` is not a string it will be converted automatically by using `toString()`.
 
-Example
+Examples
 
 ```js
-const checker = createChecker({
-  fields: {
-    username: {
-      value: () => user.name,
-      rule: regex(/^[a-z][a-z0-9_-]+$/i),
-    },
-  },
-});
+// only characters between a-z and A-Z
+regex(/^[a-z]+$/i);
+
+// must contain at least one colon
+regex(/:/);
+
+// matches any string that ends with @intra.net
+regex(/\@intra.net$/);
 ```
 
 ### required(options)
@@ -225,14 +198,11 @@ const checker = createChecker({
 Example
 
 ```js
-const checker = createChecker({
-  fields: {
-    address: {
-      value: () => user.address,
-      rule: required(),
-    },
-  },
-});
+// input must not only contain blanks
+required();
+
+// input can only contain blanks
+required({ trim: false });
 ```
 
 ## Writing your own validator is simple
