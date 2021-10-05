@@ -16,7 +16,8 @@
       },
       message: {
         value: () => data.message,
-        rule: required(),
+        // Default rule can be skipped
+        // rule: required(),
       },
       legal: {
         value: () => data.legal,
@@ -27,7 +28,7 @@
   });
 
   // validate on data changed
-  $: data, checker.validate();
+  $: if (data) checker.validate();
 </script>
 
 <form>

@@ -1,16 +1,18 @@
 import { writable } from 'svelte/store';
 
 export const createChecker = (settings) => {
+  if (!settings.defaultRule) settings.defaultRule = required();
+
   let { subscribe, update } = writable(settings);
 
   function validate() {
     update((settings) => {
       settings.valid = true;
       for (const field of Object.values(settings.fields)) {
-        const success = field.rule.validate(field.value());
+        const success = (field.rule ?? settings.defaultRule).validate(field.value());
         field.valid = success === true;
         field.error = success === true ? '' : success;
-        settings.valid &= field.valid;
+        settings.valid &&= field.valid;
       }
       return settings;
     });

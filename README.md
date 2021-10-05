@@ -1,8 +1,8 @@
 # svelte-ds-validator
 
-Damn simple value validation for svelte
+Damn simple value checker for [Svelte](https://svelte.dev/). Most commonly used in combination with forms.
 
-## Installation
+## 0. Installation
 
 ```
 npm i -D @bztes/svelte-ds-validator
@@ -12,7 +12,7 @@ npm i -D @bztes/svelte-ds-validator
 yarn add -D @bztes/svelte-ds-validator
 ```
 
-## Code Example
+### 0-1 Code Example
 
 ```js
 <script>
@@ -33,7 +33,8 @@ yarn add -D @bztes/svelte-ds-validator
       },
       message: {
         value: () => data.message,
-        rule: required(),
+        // Default rule can be skipped
+        // rule: required(),
       },
       legal: {
         value: () => data.legal,
@@ -44,7 +45,7 @@ yarn add -D @bztes/svelte-ds-validator
   });
 
   // validate on data changed
-  $: data, checker.validate();
+  $: if (data) checker.validate();
 </script>
 
 <form>
@@ -74,20 +75,48 @@ yarn add -D @bztes/svelte-ds-validator
 </form>
 ```
 
-## Checker
+## 1. Create a Checker
 
-The Checker is a collection of input values and the rules to be checked.
+```js
+let settings = {
+  fields: {
+    field_1: { ... }
+  }
+}
+let checkerStore = createChecker(settings);
+```
 
-| Function / Properties        | Description                                                                        |
-| ---------------------------- | ---------------------------------------------------------------------------------- |
-| `checker.validate()`         | Runs the validation. Should be called after the input has changed                  |
-| `checker.valid`              | `true` if all input values are valid, `false` otherwise                            |
-| `checker.fields`             | Object with the input that should be checked. Typically on field for each variable |
-| `checker.fields.[KEY].value` | This function returns the input value to be checked                                |
-| `checker.fields.[KEY].rule`  | The rule that should be checked. Use `and()` or `or()` to combine rules            |
-| `checker.fields.[KEY].error` | Contains the error message if the input is invalid, `null` otherwise               |
+### Settings
 
-## Rule validators
+settings.**defaultRule**
+A default rule will be used by all fields of the checker where nothing else is specified
+
+settings.**fields.\*.rule**
+The rule to be checked. Use `and()` or `or()` to combine rules. Default value is `settings.defaultRule` or `required()`
+
+settings.**fields.\*.value**
+A function the returns the value to be checked
+
+### Store
+
+$checkerStore.**fields.\*.error**
+Contains the error message if the input is invalid, `null` otherwise
+
+$checkerStore.**valid**
+`true` if all input values are valid, `false` otherwise
+
+$checkerStore.**validate()**
+Triggers the validation. May be called after the input has changed
+
+## 2. Available rules
+
+```js
+let settings = {
+  fields: {
+    field_1: { rule: ... }
+  }
+}
+```
 
 ### and(...rules)
 
@@ -206,7 +235,7 @@ required();
 required({ trim: false });
 ```
 
-## Writing your own validator is simple
+## 3. Writing your own rules
 
 ### Minimal example
 
@@ -218,7 +247,7 @@ const isTrue = () => ({
 
 `validate` is a function that takes an input value and returns true or an error message
 
-### Validator with parameters
+### Rule with parameters
 
 ```js
 const equals = (value) => ({
@@ -226,7 +255,7 @@ const equals = (value) => ({
 });
 ```
 
-### Validator with options object
+### Rule with options object
 
 ```js
 const number = (options) => {
