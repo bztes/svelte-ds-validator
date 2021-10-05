@@ -45,7 +45,7 @@ yarn add -D @bztes/svelte-ds-validator
   });
 
   // validate on data changed
-  $: if (data) checker.validate();
+  $: data, checker.validate();
 </script>
 
 <form>
