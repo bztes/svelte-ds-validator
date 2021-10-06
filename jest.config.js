@@ -1,9 +1,9 @@
 module.exports = {
   transform: {
     '^.+\\.svelte$': 'svelte-jester',
-    '^.+\\.js$': 'babel-jest',
+    '^.+\\.(js|ts)$': 'babel-jest',
   },
-  moduleFileExtensions: ['js', 'svelte'],
+  moduleFileExtensions: ['js', 'ts', 'svelte'],
   coverageThreshold: {
     global: {
       branches: 100,

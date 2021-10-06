@@ -83,32 +83,35 @@ let settings = {
     field_1: { ... }
   }
 }
-let checkerStore = createChecker(settings);
+let checker = createChecker(settings);
 ```
 
 ### Settings
 
-settings.**defaultRule**
+**settings.defaultRule**  
 A default rule will be used by all fields of the checker where nothing else is specified
 
-settings.**fields.\*.rule**
+**settings.fields.\*.rule**  
 The rule to be checked. Use `and()` or `or()` to combine rules. Default value is `settings.defaultRule` or `required()`
 
-settings.**fields.\*.value**
+**settings.fields.\*.value**  
 A function the returns the value to be checked
 
-### Store
+### Checker
 
-$checkerStore.**fields.\*.error**
-Contains the error message if the input is invalid, `null` otherwise
-
-$checkerStore.**valid**
-`true` if all input values are valid, `false` otherwise
-
-$checkerStore.**validate()**
+**checker.validate()**  
 Triggers the validation. May be called after the input has changed
 
-## 2. Available rules
+**$checker.fields.\*.error**  
+Contains the error message if the input is invalid, `null` otherwise
+
+**$checker.fields.\*.valid**  
+`true` if the input value is valid, `false` otherwise
+
+**$checker.valid**  
+`true` if all input values are valid, `false` otherwise
+
+## 2. Rules
 
 ```js
 let settings = {
