@@ -1,7 +1,21 @@
 import { get } from 'svelte/store';
-import { createChecker, number } from '../index';
+import { createChecker, number, required } from '../index';
 
 describe('checker', () => {
+  test('custom error message', () => {
+    let checker = createChecker({
+      fields: {
+        a: {
+          value: () => '',
+          rule: { ...required(), error: '"a" is required' },
+        },
+      },
+    });
+
+    expect(checker.validate()).toBe(false);
+    expect(get(checker).fields.a.error).toBe('"a" is required');
+  });
+
   test('default rule', () => {
     let checker = createChecker({
       fields: {

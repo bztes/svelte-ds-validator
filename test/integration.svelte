@@ -21,7 +21,7 @@
       },
       legal: {
         value: () => data.legal,
-        // overwrite equals-rule to provide a custom error message
+        // provide a custom error message
         rule: { ...equals(true), error: 'Legal rules have to be accepted' },
       },
     },

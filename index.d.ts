@@ -13,6 +13,7 @@ interface Field {
 
 interface Rule {
   validate: (input?: any) => string | boolean;
+  error?: string;
 }
 
 interface Checker extends Readable<Store> {

@@ -27,9 +27,4 @@ describe('and', () => {
     let validator = and(and(email(), not(number())), required());
     expect(validator.validate('test@example.com')).toBe(true);
   });
-
-  test('custom error message', () => {
-    let validator = { ...and(equals(true)), error: '123abc' };
-    expect(validator.validate(false)).toBe('123abc');
-  });
 });

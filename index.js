@@ -9,9 +9,10 @@ export const createChecker = (settings) => {
     update((settings) => {
       settings.valid = true;
       for (const field of Object.values(settings.fields)) {
-        const success = (field.rule ?? settings.defaultRule).validate(field.value());
-        field.valid = success === true;
-        field.error = success === true ? '' : success;
+        const rule = field.rule ?? settings.defaultRule;
+        const validateResult = rule.validate(field.value());
+        field.valid = validateResult === true;
+        field.error = field.valid ? '' : rule.error || validateResult;
         settings.valid &&= field.valid;
       }
       return settings;
@@ -26,7 +27,7 @@ export const and = (...rules) => ({
   validate: function (value) {
     const success =
       rules.map((rule) => rule.validate(value)).find((success) => success !== true) || true;
-    return success === true || this.error || success;
+    return success === true || success;
   },
 });
 
@@ -37,7 +38,6 @@ export const email = () => ({
         !!value?.match(
           /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         )) ||
-      this.error ||
       'Please enter a valid email'
     );
   },
@@ -45,14 +45,14 @@ export const email = () => ({
 
 export const equals = (value) => ({
   validate: function (input) {
-    return value == input || this.error || 'Invalid value';
+    return value == input || 'Invalid value';
   },
 });
 
 export const not = (rule) => ({
   ...rule,
   validate: function (value) {
-    return rule.validate(value) !== true ? true : this.error || 'Invalid value';
+    return rule.validate(value) !== true ? true : 'Invalid value';
   },
 });
 
@@ -70,10 +70,10 @@ export const number = (options) => {
         input = Number(input);
       }
 
-      if (typeof input !== 'number' || isNaN(input)) return this.error || 'Not a number';
-      if (options.int && !Number.isInteger(input)) return this.error || 'Not an integer';
-      if (options.min && input < options.min) return this.error || 'Number to small';
-      if (options.max && input > options.max) return this.error || 'Number to large';
+      if (typeof input !== 'number' || isNaN(input)) return 'Not a number';
+      if (options.int && !Number.isInteger(input)) return 'Not an integer';
+      if (options.min && input < options.min) return 'Number to small';
+      if (options.max && input > options.max) return 'Number to large';
       return true;
     },
   };
@@ -84,7 +84,6 @@ export const or = (...rules) => ({
     return (
       rules.length == 0 ||
       !!rules.map((rule) => rule.validate(value)).find((success) => success === true) ||
-      this.error ||
       rules[0].validate(value)
     );
   },
@@ -92,7 +91,7 @@ export const or = (...rules) => ({
 
 export const regex = (pattern) => ({
   validate: function (value) {
-    return !!value?.toString().match(pattern) || this.error || 'Invalid value';
+    return !!value?.toString().match(pattern) || 'Invalid value';
   },
 });
 
@@ -108,7 +107,6 @@ export const required = (options) => {
           input !== null &&
           ((!options.trim && input.toString().length > 0) ||
             (options.trim && !input.toString().match(/^\s*$/)))) ||
-        this.error ||
         'This field is required'
       );
     },

@@ -38,7 +38,7 @@ yarn add -D @bztes/svelte-ds-validator
       },
       legal: {
         value: () => data.legal,
-        // overwrite equals-rule to provide a custom error message
+        // provide a custom error message
         rule: { ...equals(true), error: 'Legal rules have to be accepted' },
       },
     },
@@ -238,14 +238,14 @@ required();
 required({ trim: false });
 ```
 
-## 3. Writing your own rules
+## 3. Custome rules
 
 ### Minimal example
 
 ```js
-const isTrue = () => ({
+const isTrue = {
   validate: (input) => !!input || 'Input value must be true',
-});
+};
 ```
 
 `validate` is a function that takes an input value and returns true or an error message
