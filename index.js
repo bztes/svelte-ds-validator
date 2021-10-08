@@ -49,6 +49,46 @@ export const equals = (value) => ({
   },
 });
 
+export const files = (options) => {
+  options = {
+    min: 1,
+    max: undefined,
+    minSize: 0,
+    maxSize: undefined,
+    type: undefined,
+    ...options,
+  };
+  return {
+    validate: function (input) {
+      if (!Array.isArray(input)) {
+        return 'Invalid input type. File[] expected.';
+      }
+
+      if (options.min && input.length < options.min) {
+        return `Select at least ${options.min} ${options.min > 1 ? 'files' : 'file'}`;
+      }
+
+      if (options.max && input.length > options.max) {
+        return `Select a maximum of ${options.max} ${options.max > 1 ? 'files' : 'file'}`;
+      }
+
+      if (options.type && input.some((i) => !i.type?.match(options.type))) {
+        return 'At least one file of the wrong type';
+      }
+
+      if (options.minSize && input.some((i) => i.size < options.minSize)) {
+        return 'At least one file is to small';
+      }
+
+      if (options.maxSize && input.some((i) => i.size > options.maxSize)) {
+        return 'At least one file is to large';
+      }
+
+      return true;
+    },
+  };
+};
+
 export const not = (rule) => ({
   ...rule,
   validate: function (value) {

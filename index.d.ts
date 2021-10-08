@@ -38,6 +38,15 @@ declare function email(): Rule;
 
 declare function equals(value: any): Rule;
 
+type FilesRuleOptions = {
+  min?: number;
+  max?: number;
+  minSize?: number;
+  maxSize?: number;
+  type?: string;
+};
+declare function files(options?: FilesRuleOptions): Rule;
+
 declare function not(rule: Rule): Rule;
 
 type NumberRuleOptions = {
