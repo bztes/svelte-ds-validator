@@ -1,6 +1,6 @@
 {
   "name": "@bztes/svelte-ds-validator",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Damn simple value validation for Svelte",
   "main": "index.js",
   "svelte": "index.js",
