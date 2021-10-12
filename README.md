@@ -82,24 +82,46 @@ const checker = createChecker({
 ```
 
 **defaultRule** (Optional)  
-The default rule will be used by all fields where no specified rule is defined
+A default rule that will be used by all checker fields where no specified rule is defined
 
 **fields.[].rule** (Optional)  
-The rule to be checked. Use `and()` or `or()` to combine rules. Default value is `settings.defaultRule` or `required()`
+The rule to be checked. Use `and()` or `or()` to combine rules. If no rule is provided `checker.defaultRule`, `settings.defaultRule` or `required()` is used (in this order).
 
-**fields.[].value**  
-A function the returns the input value to be checked
+**fields.[].value()**  
+The function the provides the input value to be checked
 
 ### 1.2 Use the checker
 
+```js
+<script>
+  ...
+
+  const checker = ...
+
+  // validate on data changed
+  $: data, checker.validate();
+</script>
+
+<form>
+  <p>
+    <label for="message">Message</label>
+    <textarea name="message" bind:value={data.message} />
+    <span>{$checker.fields.message.error}</span>
+  </p>
+  <p>
+    <button type="submit" disabled={!$checker.valid}>Send</button>
+  </p>
+</form>
+```
+
 **checker.validate()**  
-Triggers the validation. May be called after the input has changed
+Triggers the validation. You probably want to call this function after the input has changed
 
 **$checker.fields.[].error**  
 Contains the error message if the input is invalid, `null` otherwise
 
 **$checker.fields.[].valid**  
-`true` if the input value is valid, `false` otherwise
+`true` if the specific input value is valid, `false` otherwise
 
 **$checker.valid**  
 `true` if all input values are valid, `false` otherwise
@@ -107,27 +129,14 @@ Contains the error message if the input is invalid, `null` otherwise
 ## 2. Rules
 
 ```js
-let settings = {
+const settings = {
   fields: {
     [field_name]: {
-      rule: {
-        validate: ...
-        value: (input) => ...
-        error: ...
-      }
-    }
-  }
-}
+      rule: email(),
+    },
+  },
+};
 ```
-
-**validate**  
-Validation function that takes an input value and returns true on validation success or an error message otherwise
-
-**value(input)** (Optional)  
-Function that can be used to provide a rule specific input value
-
-**error** (Optional)  
-Can be used to overwrite the error message of an existing rule
 
 ### 2.1 List of rules
 
@@ -290,9 +299,26 @@ Examples
 truthy();
 ```
 
-## 2.2. Additional rule settings
+## 2.2. Rule structure
 
-### Custom error message
+```js
+rule = {
+  validate: ...
+  value: (input) => ...
+  error: ...
+}
+```
+
+**validate**  
+Validation function that takes an input value and returns true on validation success or an error message otherwise
+
+**value(input)** (Optional)  
+Function that can be used to provide a rule specific input value
+
+**error** (Optional)  
+Can be used to overwrite the error message of an existing rule
+
+### Provide a custom error message
 
 ```js
 const checker = createChecker({
@@ -305,7 +331,7 @@ const checker = createChecker({
 });
 ```
 
-### Rule specific values
+### Provide a rule specific input value
 
 ```js
 let message = { response: 'Succeed', error: null };
@@ -320,9 +346,9 @@ const checker = createChecker({
 });
 ```
 
-## 2.3. Writing a rule (examples)
+### Writing a rule (examples)
 
-### Static
+**Static**
 
 ```js
 const isTrue = {
@@ -330,7 +356,7 @@ const isTrue = {
 };
 ```
 
-### With parameters
+**With parameters**
 
 ```js
 const equals = (value) => ({
