@@ -27,4 +27,13 @@ describe('and', () => {
     let validator = and(and(email(), not(number())), required());
     expect(validator.validate('test@example.com')).toBe(true);
   });
+
+  test('sub-rule value', () => {
+    const validator = and(
+      { ...equals('a'), value: (v) => v.a },
+      { ...equals('b'), value: (v) => v.b },
+    );
+    expect(validator.validate({ a: 'a', b: 'b' })).toBe(true);
+    expect(validator.validate({ a: 'c', b: 'b' })).toBe(errorMsg);
+  });
 });

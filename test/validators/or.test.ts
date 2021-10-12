@@ -27,4 +27,13 @@ describe('or', () => {
     expect(validator.validate(' ')).toBe(true);
     expect(validator.validate('abc')).toBe(errorMsgNaN);
   });
+
+  test('sub-rule value', () => {
+    const validator = or(
+      { ...equals('a'), value: (v) => v.a },
+      { ...equals('b'), value: (v) => v.b },
+    );
+    expect(validator.validate({ a: 'a', b: 'b' })).toBe(true);
+    expect(validator.validate({ a: 'y', b: 'z' })).toBe(errorMsg);
+  });
 });

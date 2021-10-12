@@ -2,7 +2,7 @@
 
 Damn simple value checker for [Svelte](https://svelte.dev/). Most commonly used in combination with forms.
 
-## 0. Installation
+## Installation
 
 ```
 npm i -D @bztes/svelte-ds-validator
@@ -12,11 +12,11 @@ npm i -D @bztes/svelte-ds-validator
 yarn add -D @bztes/svelte-ds-validator
 ```
 
-### 0-1 Code Example
+## 0. Example Code
 
 ```js
 <script>
-  import { and, createChecker, email, equals, number, required } from '@bztes/svelte-ds-validator';
+  import { and, createChecker, email, number, required } from '@bztes/svelte-ds-validator';
 
   export let data;
 
@@ -35,11 +35,6 @@ yarn add -D @bztes/svelte-ds-validator
         value: () => data.message,
         // Default rule can be skipped
         // rule: required(),
-      },
-      legal: {
-        value: () => data.legal,
-        // provide a custom error message
-        rule: { ...equals(true), error: 'Legal rules have to be accepted' },
       },
     },
   });
@@ -65,47 +60,45 @@ yarn add -D @bztes/svelte-ds-validator
     <span>{$checker.fields.message.error}</span>
   </p>
   <p>
-    <label for="legal">Accept</label>
-    <input type="checkbox" name="legal" bind:checked={data.legal} />
-    <span>{$checker.fields.legal.error}</span>
-  </p>
-  <p>
     <button type="submit" disabled={!$checker.valid}>Send</button>
   </p>
 </form>
 ```
 
-## 1. Create a Checker
+## 1. Checker
+
+### 1.1 Create the checker
 
 ```js
-let settings = {
+const checker = createChecker({
+  defaultRule: ...
   fields: {
-    field_1: { ... }
+    [field_name]: {
+      value: () => ...
+      rule: ...
+    }
   }
-}
-let checker = createChecker(settings);
+});
 ```
 
-### Settings
+**defaultRule** (Optional)  
+The default rule will be used by all fields where no specified rule is defined
 
-**settings.defaultRule**  
-A default rule will be used by all fields of the checker where nothing else is specified
-
-**settings.fields.\*.rule**  
+**fields.[].rule** (Optional)  
 The rule to be checked. Use `and()` or `or()` to combine rules. Default value is `settings.defaultRule` or `required()`
 
-**settings.fields.\*.value**  
-A function the returns the value to be checked
+**fields.[].value**  
+A function the returns the input value to be checked
 
-### Checker
+### 1.2 Use the checker
 
 **checker.validate()**  
 Triggers the validation. May be called after the input has changed
 
-**$checker.fields.\*.error**  
+**$checker.fields.[].error**  
 Contains the error message if the input is invalid, `null` otherwise
 
-**$checker.fields.\*.valid**  
+**$checker.fields.[].valid**  
 `true` if the input value is valid, `false` otherwise
 
 **$checker.valid**  
@@ -116,10 +109,27 @@ Contains the error message if the input is invalid, `null` otherwise
 ```js
 let settings = {
   fields: {
-    field_1: { rule: ... }
+    [field_name]: {
+      rule: {
+        validate: ...
+        value: (input) => ...
+        error: ...
+      }
+    }
   }
 }
 ```
+
+**validate**  
+Validation function that takes an input value and returns true on validation success or an error message otherwise
+
+**value(input)** (Optional)  
+Function that can be used to provide a rule specific input value
+
+**error** (Optional)  
+Can be used to overwrite the error message of an existing rule
+
+### 2.1 List of rules
 
 ### and(...rules)
 
@@ -128,7 +138,8 @@ Combine multiple rules: All rules must become `true`. Default value for `rules` 
 Examples
 
 ```js
-// having various error messages: first checks if an input is provided and then validates the pattern
+// first checks if an input is provided and then validates the pattern
+// Userfull if the required error message should be returned on an empty input
 and(required(), regex(/^[0-9]{3}\/[0-9]{3}$/))
 
 // input must be a number but not between 18 and 21
@@ -142,7 +153,7 @@ Email address validation.
 Example
 
 ```js
-// nothing to say here
+// any well formed email address
 email();
 ```
 
@@ -156,8 +167,19 @@ Examples
 // string matching
 equals('confirm');
 
-// input must be true, 1 or "1"
+// input must be true, 1, 'abc'. same as truthy()
 equals(true);
+```
+
+### falsy()
+
+Input value must evaluate to `false`: `!input`.
+
+Examples
+
+```js
+// valid input: false, 0, null, ...
+falsy();
 ```
 
 ### files(options)
@@ -257,43 +279,61 @@ required();
 required({ trim: false });
 ```
 
-## 3. Custome rules
+### truthy()
 
-### Minimal example
+Input value must evaluate to `true`: `Boolean(input)`.
+
+Examples
+
+```js
+// valid input: true, 1, 'abc', ...
+truthy();
+```
+
+## 2.2. Additional rule settings
+
+### Custom error message
+
+```js
+const checker = createChecker({
+  fields: {
+    legal: {
+      value: () => data.legal,
+      rule: { ...equals(true), error: 'Legal rules have to be accepted' },
+    },
+  },
+});
+```
+
+### Rule specific values
+
+```js
+let message = { response: 'Succeed', error: null };
+
+const checker = createChecker({
+  fields: {
+    message: {
+      value: () => message,
+      rule: and({ ...required(), value: (v) => v.response }, { ...falsy(), value: (v) => v.error }),
+    },
+  },
+});
+```
+
+## 2.3. Writing a rule (examples)
+
+### Static
 
 ```js
 const isTrue = {
-  validate: (input) => !!input || 'Input value must be true',
+  validate: (input) => input === true || 'Input value must be true',
 };
 ```
 
-`validate` is a function that takes an input value and returns true or an error message
-
-### Rule with parameters
+### With parameters
 
 ```js
 const equals = (value) => ({
   validate: (input) => value == input || 'Invalid value',
 });
-```
-
-### Rule with options object
-
-```js
-const number = (options) => {
-  // provide default values
-  options = {
-    min: undefined,
-    max: undefined,
-    ...options,
-  };
-  return {
-    validate: (input) => {
-      if (typeof input !== 'number') return 'Not a number';
-      if (options.min && input < options.min) return 'Number to small';
-      if (options.max && input > options.max) return 'Number to large';
-      return true;
-    },
-  };
-};
 ```

@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { createChecker, number, required } from '../index';
+import { createChecker, number, required, truthy, and, falsy } from '../index';
 
 describe('checker', () => {
   test('custom error message', () => {
@@ -14,6 +14,20 @@ describe('checker', () => {
 
     expect(checker.validate()).toBe(false);
     expect(get(checker).fields.a.error).toBe('"a" is required');
+  });
+
+  test('custom rule value', () => {
+    let checker = createChecker({
+      fields: {
+        a: {
+          value: () => ({ response: 'Succeed', error: null }),
+          rule: { ...truthy(), value: (v) => v.response },
+        },
+      },
+    });
+
+    expect(checker.validate()).toBe(true);
+    expect(get(checker).fields.a.valid).toBe(true);
   });
 
   test('default rule', () => {

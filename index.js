@@ -6,27 +6,34 @@ export const createChecker = (settings) => {
   let { subscribe, update } = writable(settings);
 
   function validate() {
+    let result = false;
+
     update((settings) => {
       settings.valid = true;
       for (const field of Object.values(settings.fields)) {
         const rule = field.rule ?? settings.defaultRule;
-        const validateResult = rule.validate(field.value());
+        const value = rule.value ? rule.value(field.value()) : field.value();
+        const validateResult = rule.validate(value);
         field.valid = validateResult === true;
-        field.error = field.valid ? '' : rule.error || validateResult;
+        field.error = field.valid ? '' : rule.error ?? validateResult;
         settings.valid &&= field.valid;
       }
+      result = settings.valid;
       return settings;
     });
-    return settings.valid;
+
+    return result;
   }
 
   return { validate, subscribe };
 };
 
 export const and = (...rules) => ({
-  validate: function (value) {
+  validate: function (input) {
     const success =
-      rules.map((rule) => rule.validate(value)).find((success) => success !== true) || true;
+      rules
+        .map((rule) => rule.validate(rule.value ? rule.value(input) : input))
+        .find((success) => success !== true) || true;
     return success === true || success;
   },
 });
@@ -47,6 +54,10 @@ export const equals = (value) => ({
   validate: function (input) {
     return value == input || 'Invalid value';
   },
+});
+
+export const falsy = () => ({
+  validate: (input) => !input || 'Invalid value',
 });
 
 export const files = (options) => {
@@ -120,11 +131,13 @@ export const number = (options) => {
 };
 
 export const or = (...rules) => ({
-  validate: function (value) {
+  validate: function (input) {
     return (
       rules.length == 0 ||
-      !!rules.map((rule) => rule.validate(value)).find((success) => success === true) ||
-      rules[0].validate(value)
+      !!rules
+        .map((rule) => rule.validate(rule.value ? rule.value(input) : input))
+        .find((success) => success === true) ||
+      rules[0].validate(input)
     );
   },
 });
@@ -152,3 +165,7 @@ export const required = (options) => {
     },
   };
 };
+
+export const truthy = () => ({
+  validate: (input) => Boolean(input) || 'Invalid value',
+});

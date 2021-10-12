@@ -13,6 +13,7 @@ interface Field {
 
 interface Rule {
   validate: (input?: any) => string | boolean;
+  value?: (fieldValue?: any) => any;
   error?: string;
 }
 
@@ -37,6 +38,8 @@ declare function and(...rules: Rule[]): Rule;
 declare function email(): Rule;
 
 declare function equals(value: any): Rule;
+
+declare function falsy(): Rule;
 
 type FilesRuleOptions = {
   min?: number;
@@ -65,3 +68,5 @@ type RequiredRuleOptions = {
   trim?: boolean;
 };
 declare function required(options?: RequiredRuleOptions): Rule;
+
+declare function truthy(): Rule;
