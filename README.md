@@ -88,7 +88,7 @@ A default rule that will be used by all checker fields where no specified rule i
 The rule to be checked. Use `and()` or `or()` to combine rules. If no rule is provided `checker.defaultRule`, `settings.defaultRule` or `required()` is used (in this order).
 
 **fields.[].value()**  
-The function the provides the input value to be checked
+The function that provides the input value to be checked
 
 ### 1.2 Use the checker
 
@@ -118,7 +118,7 @@ The function the provides the input value to be checked
 Triggers the validation. You probably want to call this function after the input has changed
 
 **$checker.fields.[].error**  
-Contains the error message if the input is invalid, `null` otherwise
+Contains the error message for the individual fields if the input is invalid, `null` otherwise
 
 **$checker.fields.[].valid**  
 `true` if the specific input value is valid, `false` otherwise
@@ -149,10 +149,10 @@ Examples
 ```js
 // first checks if an input is provided and then validates the pattern
 // Userfull if the required error message should be returned on an empty input
-and(required(), regex(/^[0-9]{3}\/[0-9]{3}$/))
+and(required(), regex(/^[0-9]{3}\/[0-9]{3}$/));
 
 // input must be a number but not between 18 and 21
-and(number(), not(number({ min: 18, max: 21 }))
+and(number(), not(number({ min: 18, max: 21 }));
 ```
 
 ### email()
@@ -299,7 +299,30 @@ Examples
 truthy();
 ```
 
-## 2.2. Rule structure
+## 2.3. Custom error messages
+
+Examples
+
+```js
+const options = {
+  msg: {
+    invalidValue: 'whitespaces not allowed',
+  },
+};
+not(regex(/\s/), options);
+```
+
+```js
+const options = {
+  min: 18,
+  msg = {
+    numberToSmall: 'adults only',
+  },
+};
+number(options);
+```
+
+## 2.2. Advanced: rule interface
 
 ```js
 rule = {

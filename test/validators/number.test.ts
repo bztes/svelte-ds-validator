@@ -1,19 +1,14 @@
 import { number } from '../../index';
 
-let nanMsg = 'Not a number';
-let smallMsg = 'Number to small';
-let largeMsg = 'Number to large';
-let intMsg = 'Not an integer';
-
 describe('number', () => {
   test('string', () => {
     let validator = number();
-    expect(validator.validate('bztes')).toBe(nanMsg);
+    expect(validator.validate('bztes')).toBe(number.Options.msg.notANumber);
   });
 
   test('NaN', () => {
     let validator = number();
-    expect(validator.validate(NaN)).toBe(nanMsg);
+    expect(validator.validate(NaN)).toBe(number.Options.msg.notANumber);
   });
 
   test('string number', () => {
@@ -23,27 +18,27 @@ describe('number', () => {
 
   test('string number, parsing false', () => {
     let validator = number({ parseString: false });
-    expect(validator.validate('10')).toBe(nanMsg);
+    expect(validator.validate('10')).toBe(number.Options.msg.notANumber);
   });
 
   test('undefined', () => {
     let validator = number();
-    expect(validator.validate()).toBe(nanMsg);
+    expect(validator.validate()).toBe(number.Options.msg.notANumber);
   });
 
   test('null', () => {
     let validator = number();
-    expect(validator.validate(null)).toBe(nanMsg);
+    expect(validator.validate(null)).toBe(number.Options.msg.notANumber);
   });
 
   test('function', () => {
     let validator = number();
-    expect(validator.validate(() => 'bztes')).toBe(nanMsg);
+    expect(validator.validate(() => 'bztes')).toBe(number.Options.msg.notANumber);
   });
 
   test('false', () => {
     let validator = number();
-    expect(validator.validate(false)).toBe(nanMsg);
+    expect(validator.validate(false)).toBe(number.Options.msg.notANumber);
   });
 
   test('undefined min', () => {
@@ -60,12 +55,12 @@ describe('number', () => {
     let validator = number({ min: 1, max: 9 });
     expect(validator.validate(1)).toBe(true);
     expect(validator.validate(9)).toBe(true);
-    expect(validator.validate(0)).toBe(smallMsg);
-    expect(validator.validate(10)).toBe(largeMsg);
+    expect(validator.validate(0)).toBe(number.Options.msg.numberToSmall);
+    expect(validator.validate(10)).toBe(number.Options.msg.numberToLarge);
   });
 
   test('integer', () => {
     let validator = number({ int: true });
-    expect(validator.validate(1.1)).toBe(intMsg);
+    expect(validator.validate(1.1)).toBe(number.Options.msg.notAInt);
   });
 });

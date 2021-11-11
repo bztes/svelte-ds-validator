@@ -1,16 +1,14 @@
 import { truthy } from '../../index';
 
-let errorMsg = 'Invalid value';
-
 describe('truthy', () => {
   test('undefined', () => {
     const validator = truthy();
-    expect(validator.validate()).toBe(errorMsg);
+    expect(validator.validate()).toBe(truthy.Options.msg.invalidValue);
   });
 
   test('null', () => {
     const validator = truthy();
-    expect(validator.validate(null)).toBe(errorMsg);
+    expect(validator.validate(null)).toBe(truthy.Options.msg.invalidValue);
   });
 
   test('true', () => {
@@ -20,12 +18,12 @@ describe('truthy', () => {
 
   test('false', () => {
     const validator = truthy();
-    expect(validator.validate(false)).toBe(errorMsg);
+    expect(validator.validate(false)).toBe(truthy.Options.msg.invalidValue);
   });
 
   test('0', () => {
     const validator = truthy();
-    expect(validator.validate(0)).toBe(errorMsg);
+    expect(validator.validate(0)).toBe(truthy.Options.msg.invalidValue);
   });
 
   test('1', () => {

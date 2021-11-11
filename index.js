@@ -1,4 +1,8 @@
 import { writable } from 'svelte/store';
+import _ from 'lodash';
+import IntlMessageFormat from 'intl-messageformat';
+
+const locale = 'en-us';
 
 export const createChecker = (settings) => {
   if (!settings.defaultRule) settings.defaultRule = required();
@@ -29,7 +33,7 @@ export const createChecker = (settings) => {
 };
 
 export const and = (...rules) => ({
-  validate: function (input) {
+  validate: (input) => {
     const success =
       rules
         .map((rule) => rule.validate(rule.value ? rule.value(input) : input))
@@ -38,96 +42,142 @@ export const and = (...rules) => ({
   },
 });
 
-export const email = () => ({
-  validate: function (value) {
-    return (
-      (typeof value === 'string' &&
-        !!value?.match(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        )) ||
-      'Please enter a valid email'
-    );
+export const email = (options) => {
+  options = _.defaultsDeep(options || {}, email.Options);
+  return {
+    validate: (value) => {
+      return (
+        (typeof value === 'string' &&
+          !!value?.match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          )) ||
+        options.msg.invalidEmail
+      );
+    },
+  };
+};
+email.Options = {
+  msg: {
+    invalidEmail: 'Please enter a valid email',
   },
-});
+};
 
-export const equals = (value) => ({
-  validate: function (input) {
-    return value == input || 'Invalid value';
+export const equals = (value, options) => {
+  options = _.defaultsDeep(options || {}, equals.Options);
+  return {
+    validate: function (input) {
+      return value == input || options.msg.invalidValue;
+    },
+  };
+};
+equals.Options = {
+  msg: {
+    invalidValue: 'Invalid value',
   },
-});
+};
 
-export const falsy = () => ({
-  validate: (input) => !input || 'Invalid value',
-});
+export const falsy = (options) => {
+  options = _.defaultsDeep(options || {}, falsy.Options);
+  return {
+    validate: (input) => !input || options.msg.invalidValue,
+  };
+};
+falsy.Options = {
+  msg: {
+    invalidValue: 'Invalid value',
+  },
+};
 
 export const files = (options) => {
-  options = {
-    min: 1,
-    max: undefined,
-    minSize: 0,
-    maxSize: undefined,
-    type: undefined,
-    ...options,
-  };
+  options = _.defaultsDeep(options || {}, files.Options);
   return {
     validate: function (input) {
       if (!Array.isArray(input)) {
-        return 'Invalid input type. File[] expected.';
+        return options.msg.invalidInputType;
       }
 
       if (options.min && input.length < options.min) {
-        return `Select at least ${options.min} ${options.min > 1 ? 'files' : 'file'}`;
+        return new IntlMessageFormat(options.msg.tooFewFiles, locale).format(options);
       }
 
       if (options.max && input.length > options.max) {
-        return `Select a maximum of ${options.max} ${options.max > 1 ? 'files' : 'file'}`;
+        return new IntlMessageFormat(options.msg.tooManyFiles, locale).format(options);
       }
 
       if (options.type && input.some((i) => !i.type?.match(options.type))) {
-        return 'At least one file of the wrong type';
+        return options.msg.invalidFileType;
       }
 
       if (options.minSize && input.some((i) => i.size < options.minSize)) {
-        return 'At least one file is to small';
+        return options.msg.fileToSmall;
       }
 
       if (options.maxSize && input.some((i) => i.size > options.maxSize)) {
-        return 'At least one file is to large';
+        return options.msg.fileToLarge;
       }
 
       return true;
     },
   };
 };
-
-export const not = (rule) => ({
-  ...rule,
-  validate: function (value) {
-    return rule.validate(value) !== true ? true : 'Invalid value';
+files.Options = {
+  min: 1,
+  max: undefined,
+  minSize: 0,
+  maxSize: undefined,
+  type: undefined,
+  msg: {
+    invalidInputType: 'Invalid input type. File[] expected.',
+    tooFewFiles: 'Select at least {min} {min, plural, =1 {file} other {files}}',
+    tooManyFiles: 'Select a maximum of {max} {max, plural, =1 {file} other {files}}',
+    invalidFileType: 'At least one file of the wrong type',
+    fileToSmall: 'At least one file is to small',
+    fileToLarge: 'At least one file is to large',
   },
-});
+};
+
+export const not = (rule, options) => {
+  options = _.defaultsDeep(options || {}, not.Options);
+  return {
+    ...rule,
+    validate: function (value) {
+      return rule.validate(value) !== true ? true : options.msg.invalidValue;
+    },
+  };
+};
+not.Options = {
+  msg: {
+    invalidValue: 'Invalid value',
+  },
+};
 
 export const number = (options) => {
-  options = {
-    min: undefined,
-    max: undefined,
-    int: false,
-    parseString: true,
-    ...options,
-  };
+  options = _.defaultsDeep(options || {}, number.Options);
   return {
     validate: function (input) {
       if (typeof input === 'string' && options.parseString) {
         input = Number(input);
       }
 
-      if (typeof input !== 'number' || isNaN(input)) return 'Not a number';
-      if (options.int && !Number.isInteger(input)) return 'Not an integer';
-      if (options.min && input < options.min) return 'Number to small';
-      if (options.max && input > options.max) return 'Number to large';
+      if (typeof input !== 'number' || isNaN(input)) return options.msg.notANumber;
+      if (options.int && !Number.isInteger(input)) return options.msg.notAInt;
+      if (options.min && input < options.min) return options.msg.numberToSmall;
+      if (options.max && input > options.max) return options.msg.numberToLarge;
       return true;
     },
   };
+};
+number.Options = {
+  min: undefined,
+  max: undefined,
+  int: false,
+  parseString: true,
+  msg: {
+    notANumber: 'Not a number',
+    notAInt: 'Not an integer',
+    numberToSmall: 'Number to small',
+    numberToLarge: 'Number to large',
+  },
 };
 
 export const or = (...rules) => ({
@@ -142,17 +192,22 @@ export const or = (...rules) => ({
   },
 });
 
-export const regex = (pattern) => ({
-  validate: function (value) {
-    return !!value?.toString().match(pattern) || 'Invalid value';
+export const regex = (pattern, options) => {
+  options = _.defaultsDeep(options || {}, regex.Options);
+  return {
+    validate: function (value) {
+      return !!value?.toString().match(pattern) || options.msg.invalidValue;
+    },
+  };
+};
+regex.Options = {
+  msg: {
+    invalidValue: 'Invalid value',
   },
-});
+};
 
 export const required = (options) => {
-  options = {
-    trim: true,
-    ...options,
-  };
+  options = _.defaultsDeep(options || {}, required.Options);
   return {
     validate: function (input) {
       return (
@@ -160,12 +215,26 @@ export const required = (options) => {
           input !== null &&
           ((!options.trim && input.toString().length > 0) ||
             (options.trim && !input.toString().match(/^\s*$/)))) ||
-        'This field is required'
+        options.msg.isRequired
       );
     },
   };
 };
+required.Options = {
+  trim: true,
+  msg: {
+    isRequired: 'This field is required',
+  },
+};
 
-export const truthy = () => ({
-  validate: (input) => Boolean(input) || 'Invalid value',
-});
+export const truthy = (options) => {
+  options = _.defaultsDeep(options || {}, truthy.Options);
+  return {
+    validate: (input) => Boolean(input) || 'Invalid value',
+  };
+};
+truthy.Options = {
+  msg: {
+    invalidValue: 'Invalid value',
+  },
+};

@@ -1,11 +1,9 @@
 import { and, email, equals, not, number, required } from '../../index';
 
-let errorMsg = 'Invalid value';
-
 describe('and', () => {
   test('true and false', () => {
     let validator = and(equals(true), equals(false));
-    expect(validator.validate(0)).toBe(errorMsg);
+    expect(validator.validate(0)).toBe(equals.Options.msg.invalidValue);
   });
 
   test('true and true', () => {
@@ -34,6 +32,6 @@ describe('and', () => {
       { ...equals('b'), value: (v) => v.b },
     );
     expect(validator.validate({ a: 'a', b: 'b' })).toBe(true);
-    expect(validator.validate({ a: 'c', b: 'b' })).toBe(errorMsg);
+    expect(validator.validate({ a: 'c', b: 'b' })).toBe(equals.Options.msg.invalidValue);
   });
 });

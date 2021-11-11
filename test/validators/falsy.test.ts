@@ -1,7 +1,5 @@
 import { falsy } from '../../index';
 
-let errorMsg = 'Invalid value';
-
 describe('falsy', () => {
   test('undefined', () => {
     const validator = falsy();
@@ -15,7 +13,7 @@ describe('falsy', () => {
 
   test('true', () => {
     const validator = falsy();
-    expect(validator.validate(true)).toBe(errorMsg);
+    expect(validator.validate(true)).toBe(falsy.Options.msg.invalidValue);
   });
 
   test('false', () => {
@@ -30,11 +28,11 @@ describe('falsy', () => {
 
   test('1', () => {
     const validator = falsy();
-    expect(validator.validate(1)).toBe(errorMsg);
+    expect(validator.validate(1)).toBe(falsy.Options.msg.invalidValue);
   });
 
   test('string', () => {
     const validator = falsy();
-    expect(validator.validate('a')).toBe(errorMsg);
+    expect(validator.validate('a')).toBe(falsy.Options.msg.invalidValue);
   });
 });

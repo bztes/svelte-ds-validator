@@ -21,7 +21,7 @@ const unknownFile = {
 describe('files', () => {
   test('invalid input', () => {
     let validator = files();
-    expect(validator.validate('file')).toBe('Invalid input type. File[] expected.');
+    expect(validator.validate('file')).toBe(files.Options.msg.invalidInputType);
   });
 
   test('valid default', () => {
@@ -66,7 +66,7 @@ describe('files', () => {
 
   test('invalid min size', () => {
     let validator = files({ minSize: 1001 });
-    expect(validator.validate([jpgFile])).toBe('At least one file is to small');
+    expect(validator.validate([jpgFile])).toBe(files.Options.msg.fileToSmall);
   });
 
   test('valid max size', () => {
@@ -76,7 +76,7 @@ describe('files', () => {
 
   test('invalid max size', () => {
     let validator = files({ maxSize: 999 });
-    expect(validator.validate([jpgFile])).toBe('At least one file is to large');
+    expect(validator.validate([jpgFile])).toBe(files.Options.msg.fileToLarge);
   });
 
   test('valid type', () => {
@@ -91,16 +91,16 @@ describe('files', () => {
 
   test('invalid type', () => {
     let validator = files({ type: 'text/plain' });
-    expect(validator.validate([jpgFile])).toBe('At least one file of the wrong type');
+    expect(validator.validate([jpgFile])).toBe(files.Options.msg.invalidFileType);
   });
 
   test('invalid type pattern', () => {
     let validator = files({ type: 'audio/*' });
-    expect(validator.validate([jpgFile, txtFile])).toBe('At least one file of the wrong type');
+    expect(validator.validate([jpgFile, txtFile])).toBe(files.Options.msg.invalidFileType);
   });
 
   test('invalid unknown type', () => {
     let validator = files({ type: 'text/plain' });
-    expect(validator.validate([unknownFile])).toBe('At least one file of the wrong type');
+    expect(validator.validate([unknownFile])).toBe(files.Options.msg.invalidFileType);
   });
 });

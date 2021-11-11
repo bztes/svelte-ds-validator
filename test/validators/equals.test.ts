@@ -1,11 +1,9 @@
 import { equals } from '../../index';
 
-let errorMsg = 'Invalid value';
-
 describe('equals', () => {
   test('true vs. 0', () => {
     let validator = equals(true);
-    expect(validator.validate(0)).toBe(errorMsg);
+    expect(validator.validate(0)).toBe(equals.Options.msg.invalidValue);
   });
 
   test('null vs. undefined', () => {

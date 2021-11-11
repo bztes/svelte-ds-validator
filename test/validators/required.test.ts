@@ -1,26 +1,24 @@
 import { required } from '../../index';
 
-let errorMsg = 'This field is required';
-
 describe('required', () => {
   test('empty string', () => {
     let validator = required();
-    expect(validator.validate('')).toBe(errorMsg);
+    expect(validator.validate('')).toBe(required.Options.msg.isRequired);
   });
 
   test('whitespaces', () => {
     let validator = required();
-    expect(validator.validate(' \t')).toBe(errorMsg);
+    expect(validator.validate(' \t')).toBe(required.Options.msg.isRequired);
   });
 
   test('undefined', () => {
     let validator = required();
-    expect(validator.validate()).toBe(errorMsg);
+    expect(validator.validate()).toBe(required.Options.msg.isRequired);
   });
 
   test('null', () => {
     let validator = required();
-    expect(validator.validate(null)).toBe(errorMsg);
+    expect(validator.validate(null)).toBe(required.Options.msg.isRequired);
   });
 
   test('function', () => {
