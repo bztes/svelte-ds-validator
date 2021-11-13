@@ -1,8 +1,5 @@
 import { writable } from 'svelte/store';
-import _ from 'lodash';
 import { required } from './';
-
-const locale = 'en-us';
 
 export const createChecker = (settings) => {
   if (!settings.defaultRule) settings.defaultRule = required();

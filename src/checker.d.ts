@@ -1,4 +1,4 @@
-import 'webrtc';
+
 import { Readable } from 'svelte/store';
 
 interface Settings {

@@ -1,7 +1,4 @@
-import _ from 'lodash';
-
-export const truthy = (options) => {
-  options = _.defaultsDeep(options || {}, truthy.Options);
+export const truthy = () => {
   return {
     validate: (input) => Boolean(input) || 'Invalid value',
   };

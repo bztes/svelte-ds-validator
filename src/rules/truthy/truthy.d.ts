@@ -1,4 +1,3 @@
-import 'webrtc';
 import { Rule } from '../../checker';
 
 type TruthyRuleOptions = {

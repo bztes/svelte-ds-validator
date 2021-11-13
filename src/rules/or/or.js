@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export const or = (...rules) => ({
   validate: function (input) {
     return (
