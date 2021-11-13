@@ -2,12 +2,13 @@
   "name": "@bztes/svelte-ds-validator",
   "version": "2.6.0",
   "description": "Damn simple value validation for Svelte",
-  "main": "index.js",
-  "svelte": "index.js",
+  "main": "src/index.js",
+  "svelte": "src/index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:ci": "jest --coverage=true"
+    "test:ci": "jest --coverage=true",
+    "doc": "python ./scripts/md-sh/md-sh.py README.md"
   },
   "repository": {
     "type": "git",

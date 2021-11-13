@@ -1,8 +1,8 @@
 # svelte-ds-validator
 
-Damn simple value checker for [Svelte](https://svelte.dev/). Most commonly used in combination with forms.
+Damn simple value checker for [Svelte](https://svelte.dev/). Works well with forms
 
-## Installation
+## -1. Installation
 
 ```
 npm i -D @bztes/svelte-ds-validator
@@ -67,7 +67,7 @@ yarn add -D @bztes/svelte-ds-validator
 
 ## 1. Checker
 
-### 1.1 Create the checker
+### Create
 
 ```js
 const checker = createChecker({
@@ -90,7 +90,7 @@ The rule to be checked. Use `and()` or `or()` to combine rules. If no rule is pr
 **fields.[].value()**  
 The function that provides the input value to be checked
 
-### 1.2 Use the checker
+### Use
 
 ```js
 <script>
@@ -128,189 +128,38 @@ Contains the error message for the individual fields if the input is invalid, `n
 
 ## 2. Rules
 
+### Apply rules to a checker
+
 ```js
 const settings = {
   fields: {
-    [field_name]: {
+    userMail: {
       rule: email(),
     },
   },
 };
 ```
 
-### 2.1 List of rules
+### Available rules
 
-### and(...rules)
+<!--- #RUN OUTPUT find ./src/rules/ -maxdepth 2 -type f -iname 'README.md' -exec head -n 1 {} \; | sort | sed -E 's/#+ (.*)/\* [\1](https:\/\/github.com\/bztes\/svelte-ds-validator\/blob\/main\/src\/rules\/\1\/README.md)/g' -->
+<!--- #ECHO OUTPUT { -->
+* [and](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/and/README.md)
+* [email](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/email/README.md)
+* [equals](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/equals/README.md)
+* [falsy](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/falsy/README.md)
+* [files](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/files/README.md)
+* [not](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/not/README.md)
+* [number](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/number/README.md)
+* [or](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/or/README.md)
+* [regex](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/regex/README.md)
+* [required](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/required/README.md)
+* [truthy](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/truthy/README.md)
+<!--- #ECHO } -->
 
-Combine multiple rules: All rules must become `true`. Default value for `rules` is `[]`.
+## 3. Custome error messages
 
-Examples
-
-```js
-// first checks if an input is provided and then validates the pattern
-// Userfull if the required error message should be returned on an empty input
-and(required(), regex(/^[0-9]{3}\/[0-9]{3}$/));
-
-// input must be a number but not between 18 and 21
-and(number(), not(number({ min: 18, max: 21 }));
-```
-
-### email()
-
-Email address validation.
-
-Example
-
-```js
-// any well formed email address
-email();
-```
-
-### equals(value)
-
-`true` if `value == input`. Default for `value` is `undefined`.
-
-Examples
-
-```js
-// string matching
-equals('confirm');
-
-// input must be true, 1, 'abc'. same as truthy()
-equals(true);
-```
-
-### falsy()
-
-Input value must evaluate to `false`: `!input`.
-
-Examples
-
-```js
-// valid input: false, 0, null, ...
-falsy();
-```
-
-### files(options)
-
-Evaluation for files input
-
-| Options           | Default Value | Description                                                    |
-| ----------------- | ------------- | -------------------------------------------------------------- |
-| `options.min`     | `1`           | If defined files length must be at least `min`                 |
-| `options.max`     | `undefined`   | If defined files length must not the greater than `max`        |
-| `options.minSize` | `undefined`   | If defined any file size must be at least `min` (in bytes)     |
-| `options.maxSize` | `undefined`   | If defined not file size must be greater than `max` (in bytes) |
-| `options.type`    | `undefined`   | Mime type checking, e.g. `image/png` or `image/*\|text/plain`  |
-
-Example
-
-```js
-// max 5 audio files each with a max size of 5MB
-files({ max: 5, maxSize: 5000000, type: 'audio/*' });
-```
-
-### not(rule)
-
-Flips the result of another rule, e.g. `not(equal(true))` passes if input value is `false, 0, null, undefined`. `rule` parameter is required
-
-Examples
-
-```js
-// string must not contain any whitespaces
-not(regex(/\s/));
-
-// input must not be a number
-not(number());
-```
-
-### number(options)
-
-Evaluates as `true` if the `input` is a number or can be converted into a number.
-
-| Options               | Default Value | Description                                                                                           |
-| --------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-| `options.int`         | `false`       | If `true` the `input` must be a integer value                                                         |
-| `options.min`         | `undefined`   | If defined the `input` must be larger or equal to `min`                                               |
-| `options.max`         | `undefined`   | If defined the `input` must be small or equal to `max`                                                |
-| `options.parseString` | `true`        | If `true` an `input` value of type string is tried to be converted into a number before being checked |
-
-Example
-
-```js
-// input must be a integer value larger or equal to 18
-number({ int: true, min: 18 });
-```
-
-### or(...rules)
-
-Combine multiple rules: At least one rule must become `true`. Returns `true` if no rules are provided. Default value for `rules` is `[]`.
-
-Example
-
-```js
-// input must be a number or empty
-or(number(), not(required()));
-```
-
-### regex(pattern)
-
-`true` if the `input` value matches the specified pattern. If the `input` is not a string it will be converted automatically by using `toString()`.
-
-Examples
-
-```js
-// only characters between a-z and A-Z
-regex(/^[a-z]+$/i);
-
-// must contain at least one colon
-regex(/:/);
-
-// matches any string that ends with @intra.net
-regex(/\@intra.net$/);
-```
-
-### required(options)
-
-`true` if `input` is NOT `null`, `undefined` or `toString().length === 0`
-
-| Options        | Default Value | Description                                                                   |
-| -------------- | ------------- | ----------------------------------------------------------------------------- |
-| `options.trim` | `true`        | If `true` whitespaces from both ends of the `input` string are not considered |
-
-Example
-
-```js
-// input must not only contain blanks
-required();
-
-// input can only contain blanks
-required({ trim: false });
-```
-
-### truthy()
-
-Input value must evaluate to `true`: `Boolean(input)`.
-
-Examples
-
-```js
-// valid input: true, 1, 'abc', ...
-truthy();
-```
-
-## 2.3. Custom error messages
-
-Examples
-
-```js
-const options = {
-  msg: {
-    invalidValue: 'whitespaces not allowed',
-  },
-};
-not(regex(/\s/), options);
-```
+### local - only for the specified rule instance
 
 ```js
 const options = {
@@ -319,16 +168,26 @@ const options = {
     numberToSmall: 'adults only',
   },
 };
-number(options);
+rule = number(options);
 ```
 
-## 2.2. Advanced: rule interface
+### global - default for all rule instances
+
+```js
+number.Options.msg.numberToSmall = 'adults only';
+```
+
+## 4. Advanced
+
+### Rule definition
+
+**Static**
 
 ```js
 rule = {
-  validate: ...
-  value: (input) => ...
-  error: ...
+  validate(input): true | string
+  value(fieldValue)?: any
+  error?: string
 }
 ```
 
@@ -336,42 +195,12 @@ rule = {
 Validation function that takes an input value and returns true on validation success or an error message otherwise
 
 **value(input)** (Optional)  
-Function that can be used to provide a rule specific input value
+Function that can be used to provide a rule specific input value for validate(). If undefined the field value will be used as an input
 
 **error** (Optional)  
-Can be used to overwrite the error message of an existing rule
+Can be used to provide a rule specific error message. If undefined the return value from validate will be used as error message
 
-### Provide a custom error message
-
-```js
-const checker = createChecker({
-  fields: {
-    legal: {
-      value: () => data.legal,
-      rule: { ...equals(true), error: 'Legal rules have to be accepted' },
-    },
-  },
-});
-```
-
-### Provide a rule specific input value
-
-```js
-let message = { response: 'Succeed', error: null };
-
-const checker = createChecker({
-  fields: {
-    message: {
-      value: () => message,
-      rule: and({ ...required(), value: (v) => v.response }, { ...falsy(), value: (v) => v.error }),
-    },
-  },
-});
-```
-
-### Writing a rule (examples)
-
-**Static**
+### Writing your own rule (examples)
 
 ```js
 const isTrue = {
@@ -384,5 +213,33 @@ const isTrue = {
 ```js
 const equals = (value) => ({
   validate: (input) => value == input || 'Invalid value',
+});
+```
+
+### Overwrite all error messages for a rule
+
+```js
+const checker = createChecker({
+  fields: {
+    legal: {
+      value: () => data.legal,
+      rule: { ...equals(true), error: 'Legal rules have to be accepted' },
+    },
+  },
+});
+```
+
+### Rule specific input values (value mapping)
+
+```js
+let message = { response: 'Succeed', error: null };
+
+const checker = createChecker({
+  fields: {
+    message: {
+      value: () => message,
+      rule: and({ ...required(), value: (v) => v.response }, { ...falsy(), value: (v) => v.error }),
+    },
+  },
 });
 ```

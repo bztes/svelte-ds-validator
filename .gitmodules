@@ -1,0 +1,3 @@
+[submodule "scripts/md-sh"]
+	path = scripts/md-sh
+	url = git@github.com:bztes/md-sh.git
