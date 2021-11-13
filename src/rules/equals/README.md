@@ -1,10 +1,32 @@
 # equals
 
-## equals(value)
+<!--- #RUN OUTPUT echo -e "## Definition\n\n\`\`\`js\n$(cat $(basename "$PWD").d.ts)\n\`\`\`" -->
+<!--- #ECHO OUTPUT { -->
+## Definition
+
+```js
+
+import { Rule } from '../../checker';
+
+type EqualsRuleOptions = {
+  msg?: EqualsRuleMsgs;
+};
+
+type EqualsRuleMsgs = {
+  invalidValue?: string;
+}
+
+declare function equals(value: any, options?: EqualsRuleOptions): Rule;
+
+declare namespace equals {
+  export var Options: EqualsRuleOptions;
+}
+```
+<!--- #ECHO } -->
 
 `true` if `value == input`. Default for `value` is `undefined`.
 
-Examples
+## Examples
 
 ```js
 // string matching

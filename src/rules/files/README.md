@@ -1,6 +1,38 @@
 # files
 
-## files(options)
+<!--- #RUN OUTPUT echo -e "## Definition\n\n\`\`\`js\n$(cat $(basename "$PWD").d.ts)\n\`\`\`" -->
+<!--- #ECHO OUTPUT { -->
+## Definition
+
+```js
+
+import { Rule } from '../../checker';
+
+type FilesRuleOptions = {
+  min?: number;
+  max?: number;
+  minSize?: number;
+  maxSize?: number;
+  type?: string;
+  msg?: FilesRuleMsgs;
+};
+
+type FilesRuleMsgs = {
+  invalidInputType?: string;
+  tooFewFiles?: string;
+  tooManyFiles?: string;
+  invalidFileType?: string;
+  fileToSmall?: string;
+  fileToLarge?: string;
+}
+
+declare function files(options?: FilesRuleOptions): Rule;
+
+declare namespace files {
+  export var Options: FilesRuleOptions;
+}
+```
+<!--- #ECHO } -->
 
 Evaluation for files input
 
@@ -12,7 +44,7 @@ Evaluation for files input
 | `options.maxSize` | `undefined`   | If defined not file size must be greater than `max` (in bytes) |
 | `options.type`    | `undefined`   | Mime type checking, e.g. `image/png` or `image/*\|text/plain`  |
 
-Example
+## Example
 
 ```js
 // max 5 audio files each with a max size of 5MB

@@ -9,7 +9,7 @@
     "test:watch": "jest --watch",
     "test:ci": "jest --coverage=true",
     "lint": "eslint --ignore-path .gitignore .",
-    "doc": "python ./scripts/md-sh/md-sh.py README.md"
+    "doc": "python ./scripts/md-sh/md-sh.py README.md ./src"
   },
   "repository": {
     "type": "git",

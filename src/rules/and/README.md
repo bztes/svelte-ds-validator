@@ -1,10 +1,20 @@
 # and
 
-## and(...rules)
+<!--- #RUN OUTPUT echo -e "## Definition\n\n\`\`\`js\n$(cat $(basename "$PWD").d.ts)\n\`\`\`" -->
+<!--- #ECHO OUTPUT { -->
+## Definition
+
+```js
+
+import { Rule } from '../../checker';
+
+declare function and(...rules: Rule[]): Rule;
+```
+<!--- #ECHO } -->
 
 Combine multiple rules: All rules must become `true`. Default value for `rules` is `[]`.
 
-Examples
+## Examples
 
 ```js
 // first checks if an input is provided and then validates the pattern
