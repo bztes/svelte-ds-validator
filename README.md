@@ -1,6 +1,10 @@
 # svelte-ds-validator
 
-Damn simple value checker for [Svelte](https://svelte.dev/). Works well with forms
+Simple value checker for [Svelte](https://svelte.dev/)
+
+- Works well with HTML forms
+- Can be used with any input data structure. No conversion needed
+- Customizable error messages
 
 ## -1. Installation
 
@@ -24,15 +28,15 @@ yarn add -D @bztes/svelte-ds-validator
   const checker = createChecker({
     fields: {
       email: {
-        value: () => data.email,
+        value: (data) => data.email,
         rule: and(required(), email()),
       },
       age: {
-        value: () => data.age,
+        value: (data) => data.age,
         rule: and(required(), number({ min: 0, max: 130, int: true })),
       },
       message: {
-        value: () => data.message,
+        value: (data) => data.message,
         // Default rule can be skipped
         // rule: required(),
       },
@@ -40,7 +44,7 @@ yarn add -D @bztes/svelte-ds-validator
   });
 
   // validate on data changed
-  $: data, checker.validate();
+  $: checker.validate(data);
 </script>
 
 <form>
@@ -67,14 +71,14 @@ yarn add -D @bztes/svelte-ds-validator
 
 ## 1. Checker
 
-### Create
+### Create a checker
 
 ```js
 const checker = createChecker({
   defaultRule: ...
   fields: {
     [field_name]: {
-      value: () => ...
+      value: (input) => ...
       rule: ...
     }
   }
@@ -82,45 +86,44 @@ const checker = createChecker({
 ```
 
 **defaultRule** (Optional)  
-A default rule that will be used by all checker fields where no specified rule is defined
+The default rule is used as a fallback if not other rule is provided by the fields
 
-**fields.[].rule** (Optional)  
-The rule to be checked. Use `and()` or `or()` to combine rules. If no rule is provided `checker.defaultRule`, `settings.defaultRule` or `required()` is used (in this order).
+**fields.[field_name].rule** (Optional)  
+The rule to be checked. Use `and()` or `or()` to combine rules. If no rule is provided `checker.defaultRule` or `settings.defaultRule` or lastly `required()` is used.
 
-**fields.[].value()**  
-The function that provides the input value to be checked
+**fields.[field_name].value(input)**  
+Function returns the value that should be checked. `input` is the value provided by `checker.validate(input)`
 
-### Use
+### Validate
 
 ```js
 <script>
-  ...
-
-  const checker = ...
-
-  // validate on data changed
-  $: data, checker.validate();
+  ... const checker = ... // validate on input data changed $: checker.validate(input);
 </script>
+```
 
+**checker.validate()**  
+Triggers the validation. You might want to call this function every time the input has changed
+
+### Result store
+
+```html
 <form>
   <p>
     <label for="message">Message</label>
-    <textarea name="message" bind:value={data.message} />
+    <textarea name="message" bind:value="{data.message}" />
     <span>{$checker.fields.message.error}</span>
   </p>
   <p>
-    <button type="submit" disabled={!$checker.valid}>Send</button>
+    <button type="submit" disabled="{!$checker.valid}">Send</button>
   </p>
 </form>
 ```
 
-**checker.validate()**  
-Triggers the validation. You probably want to call this function after the input has changed
-
-**$checker.fields.[].error**  
+**$checker.fields.[field_name].error**  
 Contains the error message for the individual fields if the input is invalid, `null` otherwise
 
-**$checker.fields.[].valid**  
+**$checker.fields.[field_name].valid**  
 `true` if the specific input value is valid, `false` otherwise
 
 **$checker.valid**  
@@ -142,19 +145,19 @@ const settings = {
 
 ### Available rules
 
-<!--- #RUN OUTPUT find ./src/rules/ -maxdepth 2 -type f -iname 'README.md' -exec head -n 1 {} \; | sort | sed -E 's/#+ (.*)/\* [\1](https:\/\/github.com\/bztes\/svelte-ds-validator\/blob\/main\/src\/rules\/\1\/README.md)/g' -->
+<!--- #RUN OUTPUT find ./src/rules/ -maxdepth 2 -type f -iname 'README.md' -exec head -n 1 {} \; | sort | sed -E 's/#+ (.*)/- [\1](https:\/\/github.com\/bztes\/svelte-ds-validator\/blob\/main\/src\/rules\/\1\/README.md)/g' -->
 <!--- #ECHO OUTPUT { -->
-* [and](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/and/README.md)
-* [email](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/email/README.md)
-* [equals](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/equals/README.md)
-* [falsy](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/falsy/README.md)
-* [files](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/files/README.md)
-* [not](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/not/README.md)
-* [number](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/number/README.md)
-* [or](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/or/README.md)
-* [regex](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/regex/README.md)
-* [required](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/required/README.md)
-* [truthy](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/truthy/README.md)
+- [and](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/and/README.md)
+- [email](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/email/README.md)
+- [equals](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/equals/README.md)
+- [falsy](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/falsy/README.md)
+- [files](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/files/README.md)
+- [not](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/not/README.md)
+- [number](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/number/README.md)
+- [or](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/or/README.md)
+- [regex](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/regex/README.md)
+- [required](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/required/README.md)
+- [truthy](https://github.com/bztes/svelte-ds-validator/blob/main/src/rules/truthy/README.md)
 <!--- #ECHO } -->
 
 ## 3. Custome error messages
@@ -192,13 +195,13 @@ rule = {
 ```
 
 **validate**  
-Validation function that takes an input value and returns true on validation success or an error message otherwise
+Validation function that takes an input value and returns true if the validation success or an error message otherwise
 
 **value(input)** (Optional)  
-Function that can be used to provide a rule specific input value for validate(). If undefined the field value will be used as an input
+Provides a rule specific input value for `rule.validate()`. If undefined the value from `field_name.value()` is used
 
 **error** (Optional)  
-Can be used to provide a rule specific error message. If undefined the return value from validate will be used as error message
+Provides a rule specific error message. If undefined the return value from `rule.validate()` is used as error message
 
 ### Writing your own rule (examples)
 

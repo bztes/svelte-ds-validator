@@ -20,7 +20,7 @@ declare namespace truthy {
 ```
 <!--- #ECHO } -->
 
-Input value must evaluate to `true`: `Boolean(input)`.
+Input value must evaluate to `true`. Same as `Boolean(input)`.
 
 ## Examples
 

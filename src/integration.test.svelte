@@ -28,7 +28,7 @@
   });
 
   // validate on data changed
-  $: data, checker.validate();
+  $: checker.validate(data);
 </script>
 
 <form>

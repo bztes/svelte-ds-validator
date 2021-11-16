@@ -6,17 +6,13 @@ export const createChecker = (settings) => {
 
   let { subscribe, update } = writable(settings);
 
-  function validate() {
+  function validate(input) {
     let result = false;
 
     update((settings) => {
       settings.valid = true;
       for (const field of Object.values(settings.fields)) {
-        const rule = field.rule ?? settings.defaultRule;
-        const value = rule.value ? rule.value(field.value()) : field.value();
-        const validateResult = rule.validate(value);
-        field.valid = validateResult === true;
-        field.error = field.valid ? '' : rule.error ?? validateResult;
+        validateField(field, input, settings.defaultRule);
         settings.valid &&= field.valid;
       }
       result = settings.valid;
@@ -27,4 +23,16 @@ export const createChecker = (settings) => {
   }
 
   return { validate, subscribe };
+};
+
+export const validateField = (field, input, defaultRule) => {
+  const rule = field.rule ?? defaultRule;
+  const fieldValue = field.value(input);
+  const validateResult = validateRule(rule, fieldValue);
+  field.valid = validateResult === true;
+  field.error = field.valid ? '' : rule.error ?? validateResult;
+};
+
+export const validateRule = (rule, value) => {
+  return rule.validate(rule.value ? rule.value(value) : value);
 };

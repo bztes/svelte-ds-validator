@@ -1,9 +1,11 @@
+import { validateRule } from '../../checker';
+
 export const and = (...rules) => ({
   validate: (input) => {
-    const success =
-      rules
-        .map((rule) => rule.validate(rule.value?.(input) ?? input))
-        .find((success) => success !== true) || true;
-    return success === true || success;
+    const errMsg = rules
+      .map((rule) => validateRule(rule, input))
+      .find((success) => success !== true);
+    const validationResult = errMsg || true;
+    return validationResult === true || validationResult;
   },
 });

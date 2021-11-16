@@ -24,7 +24,7 @@ declare namespace email {
 ```
 <!--- #ECHO } -->
 
-Email address validation.
+Email address validation
 
 ## Example
 

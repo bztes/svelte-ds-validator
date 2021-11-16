@@ -25,7 +25,7 @@ declare namespace required {
 ```
 <!--- #ECHO } -->
 
-`true` if `input` is NOT `null`, `undefined` or `toString().length === 0`
+`true` if `input` is not `null`, `undefined` or `toString().length === 0`
 
 | Options        | Default Value | Description                                                                   |
 | -------------- | ------------- | ----------------------------------------------------------------------------- |

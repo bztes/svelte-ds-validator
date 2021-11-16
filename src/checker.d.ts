@@ -8,7 +8,7 @@ interface Settings {
 
 interface Field {
   rule?: Rule;
-  value: () => any;
+  value: (input?) => any;
 }
 
 interface Rule {
@@ -18,7 +18,7 @@ interface Rule {
 }
 
 interface Checker extends Readable<Store> {
-  validate: () => boolean;
+  validate: (input?) => boolean;
 }
 
 interface Store {

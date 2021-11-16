@@ -1,11 +1,15 @@
+import { validateRule } from '../../checker';
+
 export const or = (...rules) => ({
-  validate: function (input) {
-    return (
-      rules.length == 0 ||
-      !!rules
-        .map((rule) => rule.validate(rule.value?.(input) ?? input))
-        .find((success) => success === true) ||
-      rules[0].validate(rules[0].value?.(input) ?? input)
-    );
+  validate: (input) => {
+    if (rules.length === 0) {
+      return true;
+    }
+
+    const errMsg = rules
+      .map((rule) => validateRule(rule, input))
+      .find((success) => success === true);
+
+    return errMsg === true || validateRule(rules[0], input);
   },
 });
